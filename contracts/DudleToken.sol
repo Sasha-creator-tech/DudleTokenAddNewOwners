@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.8.0;
 
 contract DudleToken {
@@ -7,27 +8,23 @@ contract DudleToken {
     uint256 public totalSupply;
     address[] public owners;
     
-    struct pool {
-        mapping(address => bool) voters;
-        uint256 voterNumber;
-    }
-    
-    mapping(address => pool) pools;
-    mapping(address => uint256) balances;
-    mapping(address => bool) ownership;
+    mapping (address => uint256) balances;
     mapping(address => mapping(address => uint256)) allowed;
+    mapping(address => bool) ownership;
     
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _from, address indexed _to, uint256 _value);
     
     constructor () public {
-        ownership[msg.sender] = true;
-        owners.push(msg.sender);
+        //owner1
+        ownership[0x5B38Da6a701c568545dCfcB03FcB875f56beddC4] = true;
+        owners.push(0x5B38Da6a701c568545dCfcB03FcB875f56beddC4);
+        //owner2
         ownership[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2] = true;
         owners.push(0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2);
     }
     
-    function mint (address _to, uint256 _value) public onlyOwners{
+    function mint (address _to, uint256 _value) public onlyOwner {
         require(totalSupply + _value >= totalSupply && balances[_to] + _value >= balances[_to]);
         balances[_to] += _value;
         totalSupply += _value;
@@ -62,34 +59,8 @@ contract DudleToken {
         emit Approval(msg.sender, _spender, _value);
     }
     
-    function vote(address _addr) public onlyOwners{
-        require(!pools[_addr].voters[msg.sender], "this address already voted");
-        pools[_addr].voterNumber++;
-        pools[_addr].voters[msg.sender] = true;
-        owners.push(_addr);
-    }
-    
-    function addNewOwner (address _newOwner) public onlyOwners{
-        require(pools[_newOwner].voterNumber > owners.length / 2);
-        bool noMatches;
-        for (uint256 i = 0; i < owners.length; i++) {
-            if (owners[i] != _newOwner && i == owners.length - 1) {
-                noMatches = true;
-            }
-        }
-        if (noMatches) {
-            owners.push(_newOwner);
-            ownership[_newOwner] = true;
-            noMatches = false;
-            pools[_newOwner].voterNumber = 0;
-            for (uint256 i = 0; i < owners.length; i++) {
-                delete pools[_newOwner].voters[owners[i]];
-            }
-        }
-    }
-
-    modifier onlyOwners() {
-        require(ownership[msg.sender] = true);
+    modifier onlyOwner() {
+        require(ownership[msg.sender]);
         _;
     }
 }
