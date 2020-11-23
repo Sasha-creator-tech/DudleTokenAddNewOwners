@@ -1,3 +1,1 @@
 # DudleTokenAddNewOwners
-
-Redesigned vote system
